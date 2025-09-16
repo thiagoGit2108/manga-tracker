@@ -1,6 +1,8 @@
 # main.py
 
 from fastapi import FastAPI, HTTPException
+from starlette.middleware.cors import CORSMiddleware
+
 from tracker import find_new_chapters
 from database import setup_db, get_manga_details, add_manga, get_all_manga_details, delete_manga
 from pydantic import BaseModel
@@ -19,6 +21,18 @@ class MangaItem(BaseModel):
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:4200",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 setup_db()
 
