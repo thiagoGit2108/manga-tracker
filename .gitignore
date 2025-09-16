@@ -1,0 +1,20 @@
+# Ignorar as pastas de ambiente virtual
+.venv/
+venv/
+
+# Ignorar pastas de cache e arquivos temporários do Python
+__pycache__/
+*.pyc
+
+# Ignorar o arquivo do banco de dados local
+manga_links.db
+
+# Ignorar arquivos de configuração do IDE PyCharm
+.idea/
+
+# Ignorar arquivos de logs
+*.log
+
+# Outros arquivos temporários
+*.tmp
+*.temp
