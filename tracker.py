@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from database import update_last_chapter
 
 
-async def find_new_chapters(manga_name: str, url: str, selector: str, last_chapter: float):
+async def find_new_chapters(manga_id: int, url: str, selector: str, last_chapter: float):
     """
     Busca o capítulo mais recente em uma URL usando cloudscraper para contornar proteções.
     """
@@ -58,7 +58,8 @@ async def find_new_chapters(manga_name: str, url: str, selector: str, last_chapt
     # Se novos capítulos foram encontrados, ordena e atualiza o banco de dados.
     if newly_found_chapters:
         new_last_chapter = max(newly_found_chapters)
-        update_last_chapter(manga_name, new_last_chapter)
+        # O problema estava aqui: agora passamos o manga_id
+        update_last_chapter(manga_id, new_last_chapter)
         return {"status": "success", "chapters": newly_found_chapters}
 
     return {"status": "success", "chapters": []}

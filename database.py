@@ -11,12 +11,13 @@ def connect_db():
 
 
 def setup_db():
-    """Cria a tabela se ela não existir."""
+    """Cria as tabelas se elas não existirem."""
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS manga_list (
-            name TEXT PRIMARY KEY NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
             url TEXT NOT NULL,
             selector TEXT NOT NULL,
             last_chapter REAL DEFAULT 0
@@ -26,23 +27,23 @@ def setup_db():
     conn.close()
 
 
-def get_manga_details(manga_name):
-    """Busca a URL, seletor e último capítulo para um mangá específico."""
+def get_manga_details(manga_id: int):
+    """Busca a URL, seletor e último capítulo para um mangá específico, usando o ID."""
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT url, selector, last_chapter FROM manga_list WHERE name = ?", (manga_name,))
+    cursor.execute("SELECT name, url, selector, last_chapter FROM manga_list WHERE id = ?", (manga_id,))
     result = cursor.fetchone()
     conn.close()
     if result:
-        return {"url": result[0], "selector": result[1], "last_chapter": result[2]}
+        return {"name": result[0], "url": result[1], "selector": result[2], "last_chapter": result[3]}
     return None
 
 
-def update_last_chapter(name: str, new_chapter: float):
-    """Atualiza o último capítulo rastreado de um mangá."""
+def update_last_chapter(manga_id: int, new_chapter: float):
+    """Atualiza o último capítulo rastreado de um mangá, usando o ID."""
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("UPDATE manga_list SET last_chapter = ? WHERE name = ?", (new_chapter, name))
+    cursor.execute("UPDATE manga_list SET last_chapter = ? WHERE id = ?", (new_chapter, manga_id))
     conn.commit()
     conn.close()
 
@@ -65,20 +66,20 @@ def get_all_manga_details():
     """Busca os detalhes de todos os mangás no banco de dados."""
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT name, url, selector, last_chapter FROM manga_list")
+    cursor.execute("SELECT id, name, url, selector, last_chapter FROM manga_list")
     all_details = [
-        {"name": row[0], "url": row[1], "selector": row[2], "last_chapter": row[3]}
+        {"id": row[0], "name": row[1], "url": row[2], "selector": row[3], "last_chapter": row[4]}
         for row in cursor.fetchall()
     ]
     conn.close()
     return all_details
 
 
-def delete_manga(name: str):
-    """Exclui um mangá do banco de dados pelo nome."""
+def delete_manga(manga_id: int):
+    """Exclui um mangá do banco de dados pelo ID."""
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM manga_list WHERE name = ?", (name,))
+    cursor.execute("DELETE FROM manga_list WHERE id = ?", (manga_id,))
     conn.commit()
     rows_deleted = cursor.rowcount
     conn.close()

@@ -5,6 +5,12 @@ from tracker import find_new_chapters
 from database import setup_db, get_manga_details, add_manga, get_all_manga_details, delete_manga
 from pydantic import BaseModel
 
+import asyncio
+import sys
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 
 class MangaItem(BaseModel):
     name: str
@@ -17,16 +23,16 @@ app = FastAPI()
 setup_db()
 
 
-@app.get("/track-manga/{manga_name}")
-async def track_manga(manga_name: str):
-    """Endpoint para buscar novos capítulos de um mangá específico por nome."""
-    manga_details = get_manga_details(manga_name)
+@app.get("/track-manga/{manga_id}")
+async def track_manga(manga_id: int):
+    """Endpoint para buscar novos capítulos de um mangá específico por ID."""
+    manga_details = get_manga_details(manga_id)
 
     if not manga_details:
         raise HTTPException(status_code=404, detail="Mangá não encontrado na lista.")
 
     result = await find_new_chapters(
-        manga_name,
+        manga_id,
         manga_details['url'],
         manga_details['selector'],
         manga_details['last_chapter']
@@ -36,19 +42,9 @@ async def track_manga(manga_name: str):
         return {"message": result["message"]}
 
     if result["chapters"]:
-        return {"message": "Novos capítulos encontrados!", "manga": manga_name, "chapters": result["chapters"]}
+        return {"message": "Novos capítulos encontrados!", "manga": manga_details['name'], "chapters": result["chapters"]}
     else:
-        return {"message": "Nenhum novo capítulo encontrado.", "manga": manga_name}
-
-
-@app.post("/add-manga")
-async def add_new_manga(manga: MangaItem):
-    """Endpoint para adicionar um novo mangá à lista."""
-    added = add_manga(manga.name, manga.url, manga.selector)
-    if added:
-        return {"message": f"Mangá '{manga.name}' adicionado com sucesso."}
-    else:
-        raise HTTPException(status_code=400, detail="Mangá já existe.")
+        return {"message": "Nenhum novo capítulo encontrado.", "manga": manga_details['name']}
 
 
 @app.get("/track-all-mangas")
@@ -64,7 +60,7 @@ async def track_all_mangas():
     results = {}
     for manga in mangas_to_track:
         result = await find_new_chapters(
-            manga['name'],
+            manga['id'],
             manga['url'],
             manga['selector'],
             manga['last_chapter']
@@ -74,18 +70,28 @@ async def track_all_mangas():
     return {"message": "Rastreamento de todos os mangás concluído.", "results": results}
 
 
+@app.post("/add-manga")
+async def add_new_manga(manga: MangaItem):
+    """Endpoint para adicionar um novo mangá à lista."""
+    added = add_manga(manga.name, manga.url, manga.selector)
+    if added:
+        return {"message": f"Mangá '{manga.name}' adicionado com sucesso."}
+    else:
+        raise HTTPException(status_code=400, detail="Mangá já existe.")
+
+
+@app.delete("/delete-manga/{manga_id}")
+async def delete_manga_by_id(manga_id: int):
+    """Endpoint para excluir um mangá da lista por ID."""
+    deleted = delete_manga(manga_id)
+    if deleted:
+        return {"message": f"Mangá com ID '{manga_id}' excluído com sucesso."}
+    else:
+        raise HTTPException(status_code=404, detail=f"Mangá com ID '{manga_id}' não encontrado na lista.")
+
+
 @app.get("/manga-list")
 async def get_list():
     """Endpoint para listar todos os mangás rastreados."""
     manga_list = get_all_manga_details()
     return {"mangas": manga_list}
-
-
-@app.delete("/delete-manga/{manga_name}")
-async def delete_manga_by_name(manga_name: str):
-    """Endpoint para excluir um mangá da lista pelo nome."""
-    deleted = delete_manga(manga_name)
-    if deleted:
-        return {"message": f"Mangá '{manga_name}' excluído com sucesso."}
-    else:
-        raise HTTPException(status_code=404, detail=f"Mangá '{manga_name}' não encontrado na lista.")
