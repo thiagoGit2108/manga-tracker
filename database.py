@@ -54,6 +54,14 @@ def setup_db():
             UNIQUE(manga_id, site_id)
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS site_last_seen (
+            site_id INTEGER PRIMARY KEY,
+            manga_name TEXT,
+            chapter_number REAL,
+            FOREIGN KEY(site_id) REFERENCES sites(id)
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -222,5 +230,27 @@ def delete_site(site_id: int):
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM sites WHERE id = ?", (site_id,))
+    conn.commit()
+    conn.close()
+
+
+def get_site_last_seen(site_id: int):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT manga_name, chapter_number FROM site_last_seen WHERE site_id = ?", (site_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        return {"manga": row["manga_name"], "chapter": row["chapter_number"]}
+    return None
+
+def set_site_last_seen(site_id: int, manga_name: str, chapter_number: float):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO site_last_seen (site_id, manga_name, chapter_number)
+        VALUES (?, ?, ?)
+        ON CONFLICT(site_id) DO UPDATE SET manga_name=excluded.manga_name, chapter_number=excluded.chapter_number
+    """, (site_id, manga_name, chapter_number))
     conn.commit()
     conn.close()
