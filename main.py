@@ -3,7 +3,7 @@ import sys
 from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from database import setup_db, get_manga_details_for_list, delete_manga, add_site, add_manga, get_site_id_by_url, delete_site, get_all_mangas_with_details
+from database import get_sites_with_last_seen, setup_db, get_manga_details_for_list, delete_manga, add_site, add_manga, get_site_id_by_url, delete_site, get_all_mangas_with_details
 from tracker import scrape_site_updates
 
 if sys.platform == "win32":
@@ -17,6 +17,8 @@ class SiteItem(BaseModel):
     manga_card_selector: str
     title_selector: str
     chapter_selector: str
+    navigation_mode: str = "pagination"  # 'pagination' ou 'load_more'
+    load_more_button_text: str = None
 
 
 class MangaItem(BaseModel):
@@ -92,5 +94,14 @@ def remove_site(site_id: int):
     try:
         delete_site(site_id)
         return {"message": f"Site {site_id} deletado com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@app.get("/sites-with-last-seen")
+def get_sites_and_last_seen():
+    try:
+        sites_data = get_sites_with_last_seen()
+        return {"sites": sites_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

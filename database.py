@@ -22,6 +22,8 @@ def setup_db():
             manga_card_selector TEXT,
             title_selector TEXT,
             chapter_selector TEXT,
+            navigation_mode TEXT DEFAULT 'pagination', -- 'pagination' ou 'load_more'
+            load_more_button_text TEXT DEFAULT NULL,
             UNIQUE(base_url)
         )
     """)
@@ -46,7 +48,7 @@ def setup_db():
             manga_id INTEGER NOT NULL,
             site_id INTEGER NOT NULL,
             url_on_site TEXT,
-            last_chapter_scraped REAL DEFAULT 0,
+            last_chapter_scraped TEXT DEFAULT '0',
             newly_found_chapters TEXT DEFAULT '[]',
             status TEXT DEFAULT 'pending',
             FOREIGN KEY(manga_id) REFERENCES mangas(id),
@@ -58,7 +60,7 @@ def setup_db():
         CREATE TABLE IF NOT EXISTS site_last_seen (
             site_id INTEGER PRIMARY KEY,
             manga_name TEXT,
-            chapter_number REAL,
+            chapter_number TEXT,
             FOREIGN KEY(site_id) REFERENCES sites(id)
         )
     """)
@@ -86,8 +88,20 @@ def add_site(site_details: dict):
     conn = connect_db()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO sites (name, base_url, latest_updates_url, manga_card_selector, title_selector, chapter_selector) VALUES (?, ?, ?, ?, ?, ?)",
-                       (site_details['name'], site_details['base_url'], site_details['latest_updates_url'], site_details['manga_card_selector'], site_details['title_selector'], site_details['chapter_selector']))
+        cursor.execute("""
+            INSERT INTO sites (
+                name, base_url, latest_updates_url, manga_card_selector, title_selector, chapter_selector, navigation_mode, load_more_button_text
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            site_details['name'],
+            site_details['base_url'],
+            site_details['latest_updates_url'],
+            site_details['manga_card_selector'],
+            site_details['title_selector'],
+            site_details['chapter_selector'],
+            site_details.get('navigation_mode', 'pagination'),
+            site_details.get('load_more_button_text')
+        ))
         conn.commit()
         return True
     except sqlite3.IntegrityError:
@@ -254,3 +268,24 @@ def set_site_last_seen(site_id: int, manga_name: str, chapter_number: float):
     """, (site_id, manga_name, chapter_number))
     conn.commit()
     conn.close()
+
+
+def get_sites_with_last_seen():
+    """Retorna todos os sites com seus últimos dados de rastreamento."""
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT
+            s.id AS site_id,
+            s.name AS site_name,
+            s.base_url,
+            sls.manga_name AS last_seen_manga,
+            sls.chapter_number AS last_seen_chapter
+        FROM
+            sites s
+        LEFT JOIN
+            site_last_seen sls ON s.id = sls.site_id
+    """)
+    sites_with_last_seen = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return sites_with_last_seen

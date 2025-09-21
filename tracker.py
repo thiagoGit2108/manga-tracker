@@ -1,4 +1,3 @@
-# tracker.py
 import cloudscraper
 import re
 import asyncio
@@ -12,6 +11,10 @@ from database import (
     set_site_last_seen
 )
 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+import time
 
 async def scrape_site_updates():
     sites_to_scrape = get_sites_details()
@@ -22,7 +25,6 @@ async def scrape_site_updates():
     for site in sites_to_scrape:
         print(f"Iniciando rastreamento para o site: {site['name']}...")
         site_updates_url = f"{site['base_url']}{site['latest_updates_url']}"
-        print(f"URL de atualizações: {site_updates_url}");
         page_limit = 7
         current_page = 1
 
@@ -31,6 +33,93 @@ async def scrape_site_updates():
         first_scrape = last_seen is None
         first_manga_this_run = None
 
+        # --- Load More Mode ---
+        if site.get("navigation_mode", "pagination") == "load_more":
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            driver = webdriver.Chrome(options=chrome_options)
+            driver.get(site_updates_url)
+            click_count = 0
+            while click_count < page_limit and not found_last_seen:
+                try:
+                    # Busca botão pelo texto salvo no banco
+                    btn_class = site.get("load_more_button_class")
+                    if btn_class:
+                        buttons = driver.find_elements(By.CSS_SELECTOR, btn_class)
+                    else:
+                        btn_text = site.get("load_more_button_text", "Load More")
+                        buttons = driver.find_elements(By.XPATH, f"//button[contains(text(), '{btn_text}')]")
+                        
+                    if buttons:
+                        buttons[0].click()
+                        click_count += 1
+                        time.sleep(2)
+                    else:
+                        break
+
+                    # Após cada clique, processa o HTML carregado
+                    soup = BeautifulSoup(driver.page_source, "html.parser")
+                    manga_cards = soup.select(site["manga_card_selector"])
+                    for idx, card in enumerate(manga_cards):
+                        title_element = card.select_one(site["title_selector"])
+                        chapter_element = card.select_one(site["chapter_selector"])
+                        url_element = card.select_one("a")
+                        if not title_element or not chapter_element or not url_element:
+                            continue
+                        manga_name_scraped = title_element.get_text(strip=True)
+                        chapter_text = chapter_element.get_text(strip=True)
+                        chapter_match = re.search(r"(\d+\.?\d*)", chapter_text)
+                        if not chapter_match:
+                            continue
+                        try:
+                            scraped_chapter_number = float(chapter_match.group(1))
+                        except (ValueError, IndexError):
+                            continue
+                        if click_count == 1 and idx == 0 and first_manga_this_run is None:
+                            first_manga_this_run = {
+                                "manga": manga_name_scraped,
+                                "chapter": scraped_chapter_number
+                            }
+                        if not first_scrape and last_seen:
+                            if (manga_name_scraped == last_seen["manga"] and
+                                scraped_chapter_number == last_seen["chapter"]):
+                                found_last_seen = True
+                                print(f"Encontrado último mangá/capítulo visto ({manga_name_scraped} cap {scraped_chapter_number}). Parando rastreamento deste site.")
+                                break
+                        manga_id = find_manga_in_db(manga_name_scraped)
+                        if not manga_id:
+                            continue
+                        full_url = f"{site['base_url']}{url_element['href']}"
+                        source_in_db = get_manga_by_name_and_site_id(manga_name_scraped, site["id"])
+                        if not source_in_db:
+                            create_manga_source_if_not_exists(manga_id, site["id"], full_url, scraped_chapter_number)
+                            print(f"Mangá '{manga_name_scraped}' encontrado pela primeira vez no site {site['name']}!")
+                        else:
+                            if scraped_chapter_number > source_in_db["last_chapter_scraped"]:
+                                last_saved = source_in_db["last_chapter_scraped"]
+                                scraped = scraped_chapter_number
+                                start = int(last_saved) + 1
+                                end = int(scraped) + 1
+                                newly_found = [str(ch) for ch in range(start, end)]
+                                update_source_status(
+                                    source_in_db["id"],
+                                    full_url,
+                                    scraped_chapter_number,
+                                    newly_found,
+                                )
+                                print(f"Novos capítulos encontrados para {manga_name_scraped}: {newly_found}")
+                    if found_last_seen and not first_scrape:
+                        break
+                except Exception as exc:
+                    print(f"Erro ao clicar no botão Load More: {exc}")
+                    break
+            driver.quit()
+            if first_manga_this_run:
+                set_site_last_seen(site["id"], first_manga_this_run["manga"], first_manga_this_run["chapter"])
+            print(f"Rastreamento para o site {site['name']} concluído.")
+            continue
+
+        # --- Pagination Mode (padrão) ---
         while current_page <= page_limit:
             try:
                 page_url = f"{site_updates_url}/{current_page}"
@@ -113,7 +202,6 @@ async def scrape_site_updates():
                 print(f"Erro ao raspar a página {current_page} do site {site['name']}: {exc}")
                 break
 
-        # Salva o primeiro mangá/capítulo encontrado nesta leitura
         if first_manga_this_run:
             set_site_last_seen(site["id"], first_manga_this_run["manga"], first_manga_this_run["chapter"])
 
