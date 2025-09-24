@@ -278,6 +278,7 @@ def get_sites_with_last_seen():
         SELECT
             s.id AS site_id,
             s.name AS site_name,
+            s.load_more_button_text AS load_more_text,
             s.base_url,
             sls.manga_name AS last_seen_manga,
             sls.chapter_number AS last_seen_chapter
