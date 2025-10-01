@@ -29,6 +29,7 @@ class MangaItem(BaseModel):
 app = FastAPI()
 
 origins = [
+    "http://localhost:3000",
     "http://localhost:4200",
 ]
 
@@ -105,3 +106,7 @@ def get_sites_and_last_seen():
         return {"sites": sites_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
