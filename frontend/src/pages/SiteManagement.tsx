@@ -342,19 +342,21 @@ const SiteManagement: React.FC = () => {
             <div key={site.site_id} className="card">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Globe className="h-5 w-5 text-primary-600" />
-                    <h3 className="text-lg font-semibold text-gray-900">{site.site_name}</h3>
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="p-2 bg-gradient-to-r from-polo-500 to-scampi-500 rounded-lg">
+                      <Globe className="h-5 w-5 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold bg-gradient-to-r from-scampi-600 to-bittersweet-600 bg-clip-text text-transparent">{site.site_name}</h3>
                   </div>
                   
-                  <p className="text-sm text-gray-600 mb-3 break-all">{site.base_url}</p>
+                  <p className="text-sm text-scampi-600 mb-4 break-all bg-scampi-50 px-3 py-2 rounded-lg border border-scampi-200">{site.base_url}</p>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Status:</span>
+                      <span className="text-scampi-600 font-medium">Status:</span>
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${site.last_seen_manga ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                        <span className={site.last_seen_manga ? 'text-green-600' : 'text-gray-500'}>
+                        <div className={`w-3 h-3 rounded-full ${site.last_seen_manga ? 'bg-gradient-to-r from-cucumber-500 to-cucumber-600' : 'bg-gradient-to-r from-scampi-300 to-scampi-400'} shadow-sm`}></div>
+                        <span className={`font-semibold ${site.last_seen_manga ? 'text-cucumber-600' : 'text-scampi-600'}`}>
                           {site.last_seen_manga ? 'Active' : 'Not tracked yet'}
                         </span>
                       </div>
@@ -362,8 +364,8 @@ const SiteManagement: React.FC = () => {
                     
                     {site.last_seen_manga && (
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500">Last seen:</span>
-                        <span className="text-gray-900">
+                        <span className="text-scampi-600 font-medium">Last seen:</span>
+                        <span className="text-scampi-800 font-semibold bg-scampi-100 px-2 py-1 rounded-lg">
                           {site.last_seen_manga} Ch.{site.last_seen_chapter}
                         </span>
                       </div>
@@ -371,8 +373,8 @@ const SiteManagement: React.FC = () => {
                     
                     {site.load_more_text && (
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500">Load more text:</span>
-                        <span className="text-gray-900">{site.load_more_text}</span>
+                        <span className="text-scampi-600 font-medium">Load more text:</span>
+                        <span className="text-scampi-800 font-semibold bg-polo-100 px-2 py-1 rounded-lg">{site.load_more_text}</span>
                       </div>
                     )}
                   </div>

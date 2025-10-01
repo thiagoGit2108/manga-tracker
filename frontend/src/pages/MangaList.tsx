@@ -48,22 +48,22 @@ const MangaList: React.FC = () => {
   const getStatusIcon = (status?: string) => {
     switch (status) {
       case 'active':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-cucumber-600" />;
       case 'pending':
-        return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+        return <AlertCircle className="h-4 w-4 text-polo-600" />;
       default:
-        return <BookOpen className="h-4 w-4 text-gray-400" />;
+        return <BookOpen className="h-4 w-4 text-scampi-400" />;
     }
   };
 
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return 'status-active';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'status-pending';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gradient-to-r from-scampi-100 to-scampi-200 text-scampi-800 border border-scampi-300';
     }
   };
 
@@ -150,13 +150,13 @@ const MangaList: React.FC = () => {
                   ) : (
                     <div className="space-y-2">
                       {manga.sources.map((source, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-azalea-50 to-polo-50 rounded-xl border border-azalea-200 hover:shadow-md transition-all duration-200">
                           <div className="flex items-center space-x-3">
                             {getStatusIcon(source.status)}
                             <div>
-                              <p className="font-medium text-gray-900">{source.site_name}</p>
+                              <p className="font-semibold text-scampi-800">{source.site_name}</p>
                               {source.last_chapter_scraped && (
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-scampi-600">
                                   Latest: Chapter {source.last_chapter_scraped}
                                 </p>
                               )}
@@ -164,7 +164,7 @@ const MangaList: React.FC = () => {
                           </div>
                           <div className="flex items-center space-x-2">
                             {source.newly_found_chapters && source.newly_found_chapters !== '[]' && (
-                              <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                              <span className="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-cucumber-100 to-cucumber-200 text-cucumber-800 border border-cucumber-300 rounded-full">
                                 New chapters!
                               </span>
                             )}
@@ -173,7 +173,7 @@ const MangaList: React.FC = () => {
                                 href={source.url_on_site}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1 text-gray-400 hover:text-primary-600 transition-colors"
+                                className="p-2 text-scampi-400 hover:text-bittersweet-600 hover:bg-azalea-100 rounded-lg transition-all duration-200"
                                 title="Open on site"
                               >
                                 <ExternalLink className="h-4 w-4" />

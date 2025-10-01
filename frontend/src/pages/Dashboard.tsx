@@ -97,50 +97,58 @@ const Dashboard: React.FC = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="card">
+        <div className="stat-card">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <BookOpen className="h-8 w-8 text-primary-600" />
+              <div className="p-3 bg-gradient-to-r from-bittersweet-500 to-bittersweet-600 rounded-xl">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Manga</p>
-              <p className="text-2xl font-bold text-gray-900">{mangas.length}</p>
+              <p className="text-sm font-semibold text-scampi-600">Total Manga</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-bittersweet-600 to-scampi-600 bg-clip-text text-transparent">{mangas.length}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="stat-card">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-gradient-to-r from-cucumber-500 to-cucumber-600 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Active Manga</p>
-              <p className="text-2xl font-bold text-gray-900">{activeMangas.length}</p>
+              <p className="text-sm font-semibold text-scampi-600">Active Manga</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-cucumber-600 to-cucumber-700 bg-clip-text text-transparent">{activeMangas.length}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="stat-card">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Globe className="h-8 w-8 text-blue-600" />
+              <div className="p-3 bg-gradient-to-r from-polo-500 to-polo-600 rounded-xl">
+                <Globe className="h-6 w-6 text-white" />
+              </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Sites</p>
-              <p className="text-2xl font-bold text-gray-900">{totalSites}</p>
+              <p className="text-sm font-semibold text-scampi-600">Total Sites</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-polo-600 to-polo-700 bg-clip-text text-transparent">{totalSites}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="stat-card">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <AlertCircle className="h-8 w-8 text-yellow-600" />
+              <div className="p-3 bg-gradient-to-r from-scampi-500 to-scampi-600 rounded-xl">
+                <AlertCircle className="h-6 w-6 text-white" />
+              </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">{pendingMangas.length}</p>
+              <p className="text-sm font-semibold text-scampi-600">Pending</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-scampi-600 to-scampi-700 bg-clip-text text-transparent">{pendingMangas.length}</p>
             </div>
           </div>
         </div>
@@ -156,15 +164,15 @@ const Dashboard: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {activeMangas.slice(0, 5).map((manga) => (
-                <div key={`${manga.manga_id}-${manga.site_name}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={`${manga.manga_id}-${manga.site_name}`} className="flex items-center justify-between p-4 bg-gradient-to-r from-azalea-50 to-polo-50 rounded-xl border border-azalea-200 hover:shadow-md transition-all duration-200">
                   <div>
-                    <p className="font-medium text-gray-900">{manga.manga_name}</p>
-                    <p className="text-sm text-gray-500">{manga.site_name}</p>
+                    <p className="font-semibold text-scampi-800">{manga.manga_name}</p>
+                    <p className="text-sm text-scampi-600">{manga.site_name}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-primary-600">Ch. {manga.last_chapter_scraped}</p>
+                    <p className="text-sm font-bold bg-gradient-to-r from-bittersweet-600 to-scampi-600 bg-clip-text text-transparent">Ch. {manga.last_chapter_scraped}</p>
                     {manga.newly_found_chapters && manga.newly_found_chapters !== '[]' && (
-                      <p className="text-xs text-green-600">New chapters!</p>
+                      <p className="text-xs font-semibold text-cucumber-600 bg-cucumber-100 px-2 py-1 rounded-full">New chapters!</p>
                     )}
                   </div>
                 </div>
@@ -181,15 +189,15 @@ const Dashboard: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {sites.map((site) => (
-                <div key={site.site_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={site.site_id} className="flex items-center justify-between p-4 bg-gradient-to-r from-polo-50 to-azalea-50 rounded-xl border border-polo-200 hover:shadow-md transition-all duration-200">
                   <div>
-                    <p className="font-medium text-gray-900">{site.site_name}</p>
-                    <p className="text-sm text-gray-500">{site.base_url}</p>
+                    <p className="font-semibold text-scampi-800">{site.site_name}</p>
+                    <p className="text-sm text-scampi-600 truncate max-w-xs">{site.base_url}</p>
                   </div>
                   <div className="text-right">
-                    <div className={`w-3 h-3 rounded-full ${site.last_seen_manga ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                    <div className={`w-4 h-4 rounded-full ${site.last_seen_manga ? 'bg-gradient-to-r from-cucumber-500 to-cucumber-600' : 'bg-gradient-to-r from-scampi-300 to-scampi-400'} shadow-sm`}></div>
                     {site.last_seen_manga && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-scampi-600 mt-1 font-medium">
                         Last: {site.last_seen_manga} Ch.{site.last_seen_chapter}
                       </p>
                     )}

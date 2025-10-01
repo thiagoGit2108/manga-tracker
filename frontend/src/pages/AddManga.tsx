@@ -64,17 +64,17 @@ const AddManga: React.FC = () => {
 
       {/* Success Alert */}
       {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center space-x-3">
-          <CheckCircle className="h-5 w-5 text-green-600" />
-          <p className="text-green-800">Manga added successfully! It will be tracked when found on any configured sites.</p>
+        <div className="bg-gradient-to-r from-cucumber-50 to-cucumber-100 border border-cucumber-200 rounded-xl p-4 flex items-center space-x-3 shadow-lg">
+          <CheckCircle className="h-5 w-5 text-cucumber-600" />
+          <p className="text-cucumber-800 font-semibold">Manga added successfully! It will be tracked when found on any configured sites.</p>
         </div>
       )}
 
       {/* Error Alert */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
-          <AlertCircle className="h-5 w-5 text-red-600" />
-          <p className="text-red-800">{error}</p>
+        <div className="bg-gradient-to-r from-bittersweet-50 to-bittersweet-100 border border-bittersweet-200 rounded-xl p-4 flex items-center space-x-3 shadow-lg">
+          <AlertCircle className="h-5 w-5 text-bittersweet-600" />
+          <p className="text-bittersweet-800 font-semibold">{error}</p>
         </div>
       )}
 
@@ -143,14 +143,14 @@ const AddManga: React.FC = () => {
                   {aliases.map((alias, index) => (
                     <div
                       key={index}
-                      className="inline-flex items-center px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
+                      className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-scampi-100 to-scampi-200 text-scampi-800 border border-scampi-300 rounded-xl text-sm font-semibold shadow-sm"
                     >
                       <span>{alias}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveAlias(index)}
                         disabled={loading}
-                        className="ml-2 text-primary-600 hover:text-primary-800 disabled:opacity-50"
+                        className="ml-2 text-scampi-600 hover:text-bittersweet-600 hover:bg-azalea-100 rounded-lg p-1 transition-all duration-200 disabled:opacity-50"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -199,14 +199,16 @@ const AddManga: React.FC = () => {
       </div>
 
       {/* Info Card */}
-      <div className="card bg-blue-50 border-blue-200">
-        <div className="flex items-start space-x-3">
-          <BookOpen className="h-5 w-5 text-blue-600 mt-0.5" />
+      <div className="card bg-gradient-to-r from-polo-50 to-azalea-50 border-polo-200">
+        <div className="flex items-start space-x-4">
+          <div className="p-2 bg-gradient-to-r from-polo-500 to-scampi-500 rounded-lg">
+            <BookOpen className="h-5 w-5 text-white" />
+          </div>
           <div>
-            <h3 className="font-medium text-blue-900">How it works</h3>
-            <p className="mt-1 text-sm text-blue-800">
+            <h3 className="font-semibold text-scampi-800 mb-2">How it works</h3>
+            <p className="text-sm text-scampi-700 leading-relaxed">
               Once you add a manga, the tracker will automatically monitor your configured sites for updates. 
-              When new chapters are found, they'll appear in your manga list and dashboard.
+              When new chapters are found, they'll appear in your manga list and dashboard with beautiful notifications!
             </p>
           </div>
         </div>
