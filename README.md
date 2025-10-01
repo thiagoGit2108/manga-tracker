@@ -35,16 +35,23 @@ A modern web application for tracking manga updates across multiple sites. The a
 
 ### Backend Setup
 
-1. Install Python dependencies:
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Install Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. Set up PostgreSQL database and configure connection in `database.py`
+3. Set up PostgreSQL database and configure connection in `database.py`
 
-3. Run the FastAPI server:
+4. Run the FastAPI server:
    ```bash
-   uvicorn main:app --reload
+   python main.py
+   # or
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
 
 ### Frontend Setup
@@ -84,6 +91,27 @@ docker-compose up -d
     "chapter_selector": ".link-hover.link-primary.visited\\:link-accent",
     "navigation_mode": "pagination"
 }
+```
+
+## Project Structure
+
+```
+manga-tracker/
+├── backend/                 # Python FastAPI backend
+│   ├── main.py             # FastAPI application
+│   ├── database.py         # Database operations
+│   ├── tracker.py          # Web scraping logic
+│   ├── requirements.txt    # Python dependencies
+│   ├── Dockerfile          # Backend Docker config
+│   └── README.md           # Backend documentation
+├── frontend/               # React TypeScript frontend
+│   ├── src/                # Source code
+│   ├── public/             # Static files
+│   ├── package.json        # Node dependencies
+│   └── README.md           # Frontend documentation
+├── docker-compose.yml      # Database and services
+├── .gitignore             # Git ignore rules
+└── README.md              # This file
 ```
 
 ## Usage

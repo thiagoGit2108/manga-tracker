@@ -12,7 +12,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   web:
-    build: .
+    build: ./backend
     depends_on:
       - db
     restart: always
@@ -21,7 +21,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./backend:/app
 
 volumes:
   pgdata:
