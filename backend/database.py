@@ -6,7 +6,7 @@ import psycopg2
 import psycopg2.extras
 
 # Pega a DATABASE_URL do ambiente, com um valor padrão para facilitar testes locais
-DATABASE_URL = os.getenv("DATABASE_URL", "dbname=manga_tracker user=postgres password=postgres host=localhost port=5432")
+DATABASE_URL = os.getenv("DATABASE_URL", "dbname=manga_tracker user=postgres password=postgres host=localhost port=5433")
 
 def connect_db():
     """Estabelece a conexão com o banco de dados."""

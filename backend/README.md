@@ -74,7 +74,7 @@ backend/
 ### Database Connection
 Configure the database connection in `database.py`:
 ```python
-DATABASE_URL = os.getenv("DATABASE_URL", "dbname=manga_tracker user=postgres password=postgres host=localhost port=5432")
+DATABASE_URL = os.getenv("DATABASE_URL", "dbname=manga_tracker user=postgres password=postgres host=localhost port=5433")
 ```
 
 ### CORS Settings
