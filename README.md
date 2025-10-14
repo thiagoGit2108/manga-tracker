@@ -88,7 +88,7 @@ docker-compose up -d
     "latest_updates_url": "latest",
     "manga_card_selector": ".pl-3.grow.flex.flex-col.space-y-1.group",
     "title_selector": ".link-hover.link-pri",
-    "chapter_selector": ".link-hover.link-primary.visited\\:link-accent",
+    "chapter_selector": ".link-hover.link-primary",
     "navigation_mode": "pagination"
 }
 ```
